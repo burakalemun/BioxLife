@@ -4,9 +4,25 @@ import {
   PaymentProviderSessionResponse,
   CreatePaymentProviderSession,
   UpdatePaymentProviderSession,
-  PaymentProviderSessionResponseJSON
+  AuthorizePaymentInput,
+  AuthorizePaymentOutput,
+  CapturePaymentInput,
+  CapturePaymentOutput,
+  RefundPaymentInput,
+  RefundPaymentOutput,
+  CancelPaymentInput,
+  CancelPaymentOutput,
+  DeletePaymentInput,
+  DeletePaymentOutput,
+  GetPaymentStatusInput,
+  GetPaymentStatusOutput,
+  RetrievePaymentInput,
+  RetrievePaymentOutput,
+  UpdatePaymentInput,
+  UpdatePaymentOutput,
+  WebhookActionAndData,
+  ProviderWebhookPayload
 } from "@medusajs/framework/types"
-import { Iyzico } from "iyzico-js"
 
 class IyzicoPaymentProvider extends AbstractPaymentProvider {
   static identifier = "iyzico"
@@ -15,16 +31,20 @@ class IyzicoPaymentProvider extends AbstractPaymentProvider {
   constructor(container, options) {
     super(container, options)
 
-    this.iyzico = new Iyzico({
-      apiKey: process.env.IYZICO_API_KEY || options.apiKey,
-      secretKey: process.env.IYZICO_SECRET_KEY || options.secretKey,
-      baseUrl: process.env.IYZICO_BASE_URL || options.baseUrl || "https://sandbox-api.iyzipay.com",
-    })
+    // Dynamic import or require to avoid build-time errors with specific package exports
+    try {
+      const Iyzipay = require("iyzipay")
+      this.iyzico = new Iyzipay({
+        apiKey: process.env.IYZICO_API_KEY || options.apiKey,
+        secretKey: process.env.IYZICO_SECRET_KEY || options.secretKey,
+        uri: process.env.IYZICO_BASE_URL || options.baseUrl || "https://sandbox-api.iyzipay.com",
+      })
+    } catch (e) {
+      console.warn("Iyzico client could not be initialized. Check iyzico-js or iyzipay package.")
+    }
   }
 
   async initiatePayment(input: CreatePaymentProviderSession): Promise<PaymentProviderSessionResponse> {
-    // iyzico ödeme başlatma (Threeds Initialize) mantığı burada olacak
-    // Şimdilik oturum verilerini hazırlıyoruz
     return {
       data: {
         amount: input.amount,
@@ -33,56 +53,56 @@ class IyzicoPaymentProvider extends AbstractPaymentProvider {
     }
   }
 
-  async authorizePayment(
-    paymentSessionData: Record<string, unknown>,
-    context: Record<string, unknown>
-  ): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
-    // 3D Secure sonrası onaylama işlemi
+  async authorizePayment(input: AuthorizePaymentInput): Promise<AuthorizePaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
       status: "authorized"
     }
   }
 
-  async capturePayment(paymentSessionData: Record<string, unknown>): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
-    // Parayı hesaba çekme (iyzico Capture)
+  async capturePayment(input: CapturePaymentInput): Promise<CapturePaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
       status: "captured"
     }
   }
 
-  async refundPayment(paymentSessionData: Record<string, unknown>, refundAmount: number): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
-    // İade işlemi
+  async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
     }
   }
 
-  async cancelPayment(paymentSessionData: Record<string, unknown>): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
-    // İptal işlemi
+  async cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
     }
   }
 
-  async deletePayment(paymentSessionData: Record<string, unknown>): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
+  async deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
     }
   }
 
-  async getPaymentStatus(paymentSessionData: Record<string, unknown>): Promise<string> {
+  async getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
     return "authorized"
   }
 
-  async retrievePayment(paymentSessionData: Record<string, unknown>): Promise<Record<string, unknown>> {
-    return paymentSessionData
+  async retrievePayment(input: RetrievePaymentInput): Promise<RetrievePaymentOutput> {
+    return input.data
   }
 
-  async updatePayment(input: UpdatePaymentProviderSession): Promise<PaymentProviderSessionResponse | PaymentProviderError> {
+  async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return {
       data: input.data
+    }
+  }
+
+  async getWebhookActionAndData(payload: ProviderWebhookPayload): Promise<WebhookActionAndData> {
+    return {
+      action: "not_supported",
+      data: payload.data
     }
   }
 }
