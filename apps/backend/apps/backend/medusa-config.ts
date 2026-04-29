@@ -6,6 +6,7 @@ module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
+    workerMode: process.env.MEDUSA_WORKER_MODE as any || "shared",
     databaseDriverOptions: {
       connection: {
         ssl: {
@@ -21,6 +22,9 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
+  },
+  admin: {
+    disable: process.env.MEDUSA_ADMIN_DISABLED === "true",
   },
   modules: [
     {
