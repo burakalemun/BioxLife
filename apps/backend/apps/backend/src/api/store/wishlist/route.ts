@@ -7,7 +7,7 @@ export const GET = async (
   res: MedusaResponse
 ) => {
   const wishlistModuleService: WishlistModuleService = req.scope.resolve(WISHLIST_MODULE)
-  const customerId = req.auth_context?.actor_id
+  const customerId = (req as any).auth_context?.actor_id
 
   if (!customerId) {
     return res.status(401).json({ message: "Not authenticated" })
@@ -34,7 +34,7 @@ export const POST = async (
   res: MedusaResponse
 ) => {
   const wishlistModuleService: WishlistModuleService = req.scope.resolve(WISHLIST_MODULE)
-  const customerId = req.auth_context?.actor_id
+  const customerId = (req as any).auth_context?.actor_id
   const { product_id } = req.body as { product_id: string }
 
   if (!customerId) {
