@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
-    "dev:backend": "turbo run dev --filter=backend",
-    "dev:storefront": "turbo run dev --filter=storefront",
+    "dev": "turbo run dev --filter=@dtc/backend --filter=@dtc/storefront",
+    "dev:backend": "turbo run dev --filter=@dtc/backend",
+    "dev:storefront": "turbo run dev --filter=@dtc/storefront",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

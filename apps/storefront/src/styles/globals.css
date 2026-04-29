@@ -2,42 +2,158 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* ─── Design Tokens ──────────────────────────────────────── */
+@layer base {
+  :root {
+    --cream:     #f5f0e8;
+    --cream-dark:#ede8de;
+    --sage-dark: #1e2b20;
+    --sage-mid:  #2e3d30;
+    --sage-light:#4a5e4c;
+    --gold:      #c9a84c;
+    --gold-light:#e0c97a;
+    --charcoal:  #1a1a18;
+    --muted:     #6b7b6c;
+
+    --font-display: 'Playfair Display', 'Georgia', serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-sans:    var(--font-body);
+  }
+
+  html {
+    background-color: var(--cream);
+    color: var(--charcoal);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--cream);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: var(--sage-dark);
+    color: var(--cream);
+  }
+}
+
+/* ─── Layout ─────────────────────────────────────────────── */
+@layer components {
+  .content-container {
+    @apply max-w-[1400px] w-full mx-auto px-6 md:px-12;
+  }
+
+  /* Typography scale */
+  .text-xsmall-regular { @apply text-[10px] leading-4 font-normal; }
+  .text-small-regular  { @apply text-xs leading-5 font-normal; }
+  .text-small-semi     { @apply text-xs leading-5 font-semibold; }
+  .text-base-regular   { @apply text-sm leading-6 font-normal; }
+  .text-base-semi      { @apply text-sm leading-6 font-semibold; }
+  .text-large-regular  { @apply text-base leading-6 font-normal; }
+  .text-large-semi     { @apply text-base leading-6 font-semibold; }
+  .text-xl-regular     { @apply text-2xl leading-9 font-normal; }
+  .text-xl-semi        { @apply text-2xl leading-9 font-semibold; }
+  .text-2xl-regular    { @apply text-[30px] leading-[48px] font-normal; }
+  .text-2xl-semi       { @apply text-[30px] leading-[48px] font-semibold; }
+  .text-3xl-regular    { @apply text-[32px] leading-[44px] font-normal; }
+  .text-3xl-semi       { @apply text-[32px] leading-[44px] font-semibold; }
+
+  /* ── Luxury button ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-[#1e2b20] text-[#f5f0e8] text-[11px] font-medium
+           tracking-[0.15em] uppercase
+           px-8 py-4 w-full
+           transition-all duration-300
+           hover:bg-[#2e3d30];
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           border border-[#1e2b20] text-[#1e2b20] text-[11px] font-medium
+           tracking-[0.15em] uppercase
+           px-8 py-4
+           transition-all duration-300
+           hover:bg-[#1e2b20] hover:text-[#f5f0e8];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2
+           text-[11px] font-medium tracking-[0.12em] uppercase
+           text-[#1e2b20] border-b border-[#1e2b20]/30
+           pb-0.5 transition-all duration-300
+           hover:border-[#c9a84c] hover:text-[#c9a84c];
+  }
+
+  /* ── Labels ── */
+  .label-caps {
+    @apply text-[10px] font-medium tracking-[0.2em] uppercase;
+  }
+
+  /* ── Divider ── */
+  .divider-gold {
+    @apply w-12 h-px bg-[#c9a84c];
+  }
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
 @layer utilities {
-  /* Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* Scrollbar hide */
+  .no-scrollbar::-webkit-scrollbar          { display: none; }
+  .no-scrollbar::-webkit-scrollbar-track    { background: transparent; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Text balance */
+  .text-balance { text-wrap: balance; }
+
+  /* Font families */
+  .font-display { font-family: var(--font-display) !important; }
+  .font-body    { font-family: var(--font-body) !important; }
+
+  /* Cream bg */
+  .bg-cream      { background-color: var(--cream); }
+  .bg-cream-dark { background-color: var(--cream-dark); }
+  .text-cream    { color: var(--cream); }
+  .text-gold     { color: var(--gold); }
+
+  /* Input base */
+  .input-luxury {
+    @apply w-full bg-transparent border-b border-[#1e2b20]/20
+           py-3 text-sm font-light text-[#1a1a18]
+           placeholder:text-[#6b7b6c]/60
+           outline-none focus:border-[#c9a84c]
+           transition-colors duration-300;
   }
 
-  .no-scrollbar::-webkit-scrollbar-track {
-    background-color: transparent;
+  /* ── Fade/reveal animation ── */
+  .fade-up {
+    animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  input:focus ~ label,
-  input:not(:placeholder-shown) ~ label {
-    @apply -translate-y-2 text-xsmall-regular;
-  }
-
-  input:focus ~ label {
-    @apply left-0;
-  }
-
+  /* Form autofill reset */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  select:-webkit-autofill:focus {
-    border: 1px solid #212121;
-    -webkit-text-fill-color: #212121;
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #1a1a18;
+    -webkit-box-shadow: 0 0 0 1000px var(--cream) inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 
@@ -47,66 +163,19 @@
   input[type="search"]::-webkit-search-results-decoration {
     -webkit-appearance: none;
   }
+
+  input:focus ~ label,
+  input:not(:placeholder-shown) ~ label {
+    @apply -translate-y-2 text-xsmall-regular;
+  }
+
+  input:focus ~ label { @apply left-0; }
 }
 
-@layer components {
-  .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
-  }
-
-  .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
-  }
-
-  .text-xsmall-regular {
-    @apply text-[10px] leading-4 font-normal;
-  }
-
-  .text-small-regular {
-    @apply text-xs leading-5 font-normal;
-  }
-
-  .text-small-semi {
-    @apply text-xs leading-5 font-semibold;
-  }
-
-  .text-base-regular {
-    @apply text-sm leading-6 font-normal;
-  }
-
-  .text-base-semi {
-    @apply text-sm leading-6 font-semibold;
-  }
-
-  .text-large-regular {
-    @apply text-base leading-6 font-normal;
-  }
-
-  .text-large-semi {
-    @apply text-base leading-6 font-semibold;
-  }
-
-  .text-xl-regular {
-    @apply text-2xl leading-[36px] font-normal;
-  }
-
-  .text-xl-semi {
-    @apply text-2xl leading-[36px] font-semibold;
-  }
-
-  .text-2xl-regular {
-    @apply text-[30px] leading-[48px] font-normal;
-  }
-
-  .text-2xl-semi {
-    @apply text-[30px] leading-[48px] font-semibold;
-  }
-
-  .text-3xl-regular {
-    @apply text-[32px] leading-[44px] font-normal;
-  }
-
-  .text-3xl-semi {
-    @apply text-[32px] leading-[44px] font-semibold;
+@layer utilities {
+  @keyframes shine {
+    0% { transform: translateX(-100%) skewX(-15deg); }
+    50% { transform: translateX(100%) skewX(-15deg); }
+    100% { transform: translateX(100%) skewX(-15deg); }
   }
 }

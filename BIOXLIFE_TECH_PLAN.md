@@ -307,6 +307,7 @@ bioxlife/                           ← GitHub Repo
 │       │   ├── modules/
 │       │   │   ├── iyzico/        ← Custom iyzico payment provider
 │       │   │   ├── fragrance/     ← Koku notası custom modülü
+│       │   │   ├── wishlist/      ← Favori sistemi modülü
 │       │   │   └── bulk-pricing/  ← Toplu fiyat kademeleri
 │       │   ├── api/               ← Custom API endpoint'leri
 │       │   └── subscribers/       ← Event handler'lar (sipariş, ödeme)
@@ -326,8 +327,8 @@ bioxlife/                           ← GitHub Repo
 ## 🗓️ 12 Haftalık Geliştirme Yol Haritası
 
 ### Faz 1 — Altyapı & Temel Kurulum (Hafta 1-2)
-- [ ] Monorepo kurulumu (Turborepo)
-- [ ] MedusaJS kurulumu + PostgreSQL + Redis (Docker)
+- [x] Monorepo kurulumu (Turborepo)
+- [x] MedusaJS kurulumu + PostgreSQL + Redis (Docker)
 - [ ] Cloudflare DNS yapılandırması (3 subdomain)
 - [ ] GitHub Actions CI/CD pipeline
 - [ ] Railway deploy (backend) + Vercel deploy (frontend)
@@ -337,26 +338,28 @@ bioxlife/                           ← GitHub Repo
 ### Faz 2 — Backend Özelleştirme (Hafta 3-4)
 - [ ] iyzico custom payment provider (3D Secure)
 - [ ] Gram/ml bazlı stok modülü
-- [ ] Koku notası metadata sistemi
-- [ ] SDS PDF yükleme (Cloudinary)
+- [x] Koku notası metadata sistemi
+- [x] SDS PDF yükleme (Cloudinary)
+- [x] Ürün Favorileme (Wishlist) Backend Modülü
 - [ ] Toplu fiyat kademeleri
 - [ ] Admin 2FA entegrasyonu
 
 ### Faz 3 — Storefront (Hafta 5-7)
-- [ ] Ana sayfa (hero, öne çıkan ürünler, kategoriler)
-- [ ] Ürün listeleme + filtreleme (koku notası, kategori, fiyat)
-- [ ] Ürün detay sayfası (notalar, SDS PDF, toplu fiyat)
-- [ ] Sepet + mini sepet
+- [x] Ana sayfa (hero, öne çıkan ürünler, kategoriler)
+- [x] Ürün listeleme + filtreleme (koku notası, kategori, fiyat)
+- [x] Ürün detay sayfası (notalar, SDS PDF, toplu fiyat - iptal)
+- [x] Sepet + mini sepet
 - [ ] Checkout akışı + iyzico 3D Secure popup
-- [ ] Sipariş onay sayfası
-- [ ] Kayıt & Giriş sayfaları
+- [x] Sipariş onay sayfası
+- [x] Kayıt & Giriş sayfaları
 
 ### Faz 4 — Kullanıcı Hesabı (Hafta 8)
-- [ ] Profil sayfası
-- [ ] Sipariş geçmişi & detayı
-- [ ] Adres yönetimi
-- [ ] Şifre değiştirme
-- [ ] Veri silme talebi (KVKK)
+- [x] Profil sayfası
+- [x] Sipariş geçmişi & detayı
+- [x] Adres yönetimi
+- [x] Şifre değiştirme
+- [x] Ürün Favorileme (Hesabım Entegrasyonu)
+- [x] Veri silme talebi (KVKK)
 
 ### Faz 5 — Kargo & Bildirimler (Hafta 9-10)
 - [ ] Yurtiçi Kargo API entegrasyonu
@@ -368,7 +371,7 @@ bioxlife/                           ← GitHub Repo
 ### Faz 6 — SEO, Test & Lansman (Hafta 11-12)
 - [ ] SEO: metadata, Open Graph, sitemap.xml, robots.txt
 - [ ] Core Web Vitals optimizasyonu
-- [ ] KVKK: aydınlatma metni, çerez banner
+- [x] KVKK: aydınlatma metni, çerez banner
 - [ ] OWASP Top 10 güvenlik testi
 - [ ] Yük testi (k6)
 - [ ] Staging'de tam kullanıcı akışı testi

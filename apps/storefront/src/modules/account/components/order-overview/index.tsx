@@ -27,14 +27,15 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
       className="w-full flex flex-col items-center gap-y-4"
       data-testid="no-orders-container"
     >
-      <h2 className="text-large-semi">Nothing to see here</h2>
-      <p className="text-base-regular">
-        You don&apos;t have any orders yet, let us change that {":)"}
+      <h2 className="text-large-semi text-sage-900">Henüz siparişiniz yok</h2>
+      <p className="text-base-regular text-sage-600 text-center">
+        Henüz bir siparişiniz bulunmuyor, gelin bunu doğanın <br /> 
+        mucizeleriyle tanışarak değiştirelim {":)"}
       </p>
       <div className="mt-4">
         <LocalizedClientLink href="/" passHref>
-          <Button data-testid="continue-shopping-button">
-            Continue shopping
+          <Button data-testid="continue-shopping-button" className="bg-gold-600 hover:bg-gold-700 text-white rounded-full px-8">
+            Alışverişe Başla
           </Button>
         </LocalizedClientLink>
       </div>

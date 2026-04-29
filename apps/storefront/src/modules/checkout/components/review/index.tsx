@@ -1,6 +1,6 @@
 "use client"
 
-import { Heading, Text, clx } from "@modules/common/components/ui"
+import { clx } from "@modules/common/components/ui"
 
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
@@ -21,30 +21,29 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
     (cart.payment_collection || paidByGiftcard)
 
   return (
-    <div className="bg-white">
+    <div className="bg-transparent">
       <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
+        <h2
           className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
+            "flex flex-row text-2xl gap-x-2 items-baseline font-semibold tracking-wide",
             {
               "opacity-50 pointer-events-none select-none": !isOpen,
             }
           )}
+          style={{ color: "#1e2b20", fontFamily: "'Playfair Display', serif" }}
         >
-          Review
-        </Heading>
+          Siparişi Onayla
+        </h2>
       </div>
       {isOpen && previousStepsCompleted && (
         <>
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                By clicking the Place Order button, you confirm that you have
-                read, understand and accept our Terms of Use, Terms of Sale and
-                Returns Policy and acknowledge that you have read Medusa
-                Store&apos;s Privacy Policy.
-              </Text>
+              <span className="text-sm font-light italic" style={{ color: "#6b7b6c" }}>
+                "Siparişi Tamamla" butonuna tıklayarak; Kullanım Koşullarını, 
+                Satış Sözleşmesini ve İade Politikasını okuduğunuzu, anladığınızı 
+                ve kabul ettiğinizi beyan etmiş olursunuz.
+              </span>
             </div>
           </div>
           <PaymentButton cart={cart} data-testid="submit-order-button" />

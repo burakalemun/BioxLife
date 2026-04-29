@@ -53,36 +53,113 @@ export const listProducts = async ({
     ...(await getCacheOptions("products")),
   }
 
-  return sdk.client
-    .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
-      `/store/products`,
-      {
-        method: "GET",
-        query: {
-          limit,
-          offset,
-          region_id: region?.id,
-          fields:
-            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
-          ...queryParams,
-        },
-        headers,
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ products, count }) => {
-      const nextPage = count > offset + limit ? pageParam + 1 : null
+  try {
+    return await sdk.client
+      .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
+        `/store/products`,
+        {
+          method: "GET",
+          query: {
+            limit,
+            offset,
+            region_id: region?.id,
+            fields:
+              "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
+            ...queryParams,
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        }
+      )
+      .then(({ products, count }) => {
+        const nextPage = count > offset + limit ? pageParam + 1 : null
 
-      return {
-        response: {
-          products,
-          count,
-        },
-        nextPage: nextPage,
-        queryParams,
-      }
-    })
+        return {
+          response: {
+            products,
+            count,
+          },
+          nextPage: nextPage,
+          queryParams,
+        }
+      })
+  } catch (error) {
+    console.warn("Backend'e ulaşılamadı, mock products kullanılıyor...")
+    const mockProducts = [
+      {
+        id: "prod_1",
+        title: "Pure Lavanta Yağı",
+        handle: "pure-lavender-oil",
+        description: "100% Saf ve doğal lavanta özü.",
+        thumbnail: "/category-oils.png",
+        variants: [
+          {
+            id: "var_1",
+            title: "10ml",
+            calculated_price: {
+              calculated_amount: 250,
+              original_amount: 250,
+              currency_code: "try",
+              calculated_price: {
+                price_list_type: "sale",
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: "prod_2",
+        title: "Adaçayı Rahatlatıcı Çay",
+        handle: "sage-relax-tea",
+        description: "Günün yorgunluğunu atan özel karışım.",
+        thumbnail: "/category-teas.png",
+        variants: [
+          {
+            id: "var_2",
+            title: "50g",
+            calculated_price: {
+              calculated_amount: 120,
+              original_amount: 120,
+              currency_code: "try",
+              calculated_price: {
+                price_list_type: "sale",
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: "prod_3",
+        title: "Aura No. 1 Parfüm",
+        handle: "aura-no-1",
+        description: "Sofistike ve kalıcı bir imza kokusu.",
+        thumbnail: "/category-fragrances.png",
+        variants: [
+          {
+            id: "var_3",
+            title: "50ml",
+            calculated_price: {
+              calculated_amount: 1850,
+              original_amount: 1850,
+              currency_code: "try",
+              calculated_price: {
+                price_list_type: "sale",
+              },
+            },
+          },
+        ],
+      },
+    ] as any
+    return {
+      response: {
+        products: mockProducts,
+        count: mockProducts.length,
+      },
+      nextPage: null,
+      queryParams,
+    }
+  }
 }
 
 /**

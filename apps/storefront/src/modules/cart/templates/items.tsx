@@ -1,7 +1,5 @@
 import repeat from "@lib/util/repeat"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Table } from "@modules/common/components/ui"
-
 import Item from "@modules/cart/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
@@ -11,45 +9,29 @@ type ItemsTemplateProps = {
 
 const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   const items = cart?.items
+
   return (
     <div>
-      <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+      {/* Table header */}
+      <div
+        className="grid grid-cols-[1fr_100px_100px] gap-4 pb-4 mb-2"
+        style={{ borderBottom: "1px solid rgba(30,43,32,0.1)" }}
+      >
+        <span className="label-caps" style={{ color: "#6b7b6c", fontSize: "10px" }}>Ürün</span>
+        <span className="label-caps text-center" style={{ color: "#6b7b6c", fontSize: "10px" }}>Adet</span>
+        <span className="label-caps text-right" style={{ color: "#6b7b6c", fontSize: "10px" }}>Toplam</span>
       </div>
-      <Table>
-        <Table.Header className="border-t-0">
-          <Table.Row className="text-ui-fg-subtle txt-medium-plus">
-            <Table.HeaderCell className="!pl-0">Item</Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell>Quantity</Table.HeaderCell>
-            <Table.HeaderCell className="hidden small:table-cell">
-              Price
-            </Table.HeaderCell>
-            <Table.HeaderCell className="!pr-0 text-right">
-              Total
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {items
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      currencyCode={cart?.currency_code}
-                    />
-                  )
-                })
-            : repeat(5).map((i) => {
-                return <SkeletonLineItem key={i} />
-              })}
-        </Table.Body>
-      </Table>
+
+      {/* Items */}
+      <div className="flex flex-col gap-y-6 mt-6">
+        {items
+          ? items
+              .sort((a, b) => ((a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1))
+              .map((item) => (
+                <Item key={item.id} item={item} currencyCode={cart?.currency_code || "TRY"} />
+              ))
+          : repeat(5).map((i) => <SkeletonLineItem key={i} />)}
+      </div>
     </div>
   )
 }

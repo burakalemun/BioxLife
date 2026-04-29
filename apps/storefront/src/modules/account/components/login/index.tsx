@@ -2,7 +2,6 @@ import { login } from "@lib/data/customer"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import Input from "@modules/common/components/input"
 import { useActionState } from "react"
 
 type Props = {
@@ -13,50 +12,69 @@ const Login = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(login, null)
 
   return (
-    <div
-      className="max-w-sm w-full flex flex-col items-center"
-      data-testid="login-page"
-    >
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-8">
-        Sign in to access an enhanced shopping experience.
+    <div data-testid="login-page">
+      <h1
+        className="text-3xl font-medium mb-3"
+        style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}
+      >
+        Tekrar Hoş Geldiniz
+      </h1>
+      <p className="text-sm font-light mb-10" style={{ color: "#6b7b6c" }}>
+        Size özel deneyim için giriş yapın.
       </p>
-      <form className="w-full" action={formAction}>
-        <div className="flex flex-col w-full gap-y-2">
-          <Input
-            label="Email"
+
+      <form className="space-y-8" action={formAction}>
+        <div>
+          <label className="label-caps block mb-3" style={{ color: "#6b7b6c", fontSize: "9px" }}>
+            E-posta
+          </label>
+          <input
             name="email"
             type="email"
-            title="Enter a valid email address."
             autoComplete="email"
             required
+            placeholder="adiniz@eposta.com"
+            className="input-luxury"
             data-testid="email-input"
           />
-          <Input
-            label="Password"
+        </div>
+        <div>
+          <label className="label-caps block mb-3" style={{ color: "#6b7b6c", fontSize: "9px" }}>
+            Şifre
+          </label>
+          <input
             name="password"
             type="password"
             autoComplete="current-password"
             required
+            placeholder="••••••••"
+            className="input-luxury"
             data-testid="password-input"
           />
         </div>
+
         <ErrorMessage error={message} data-testid="login-error-message" />
-        <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
-          Sign in
+
+        <SubmitButton
+          data-testid="sign-in-button"
+          className="btn-primary w-full"
+          style={{ background: "#1e2b20", color: "#f5f0e8" }}
+        >
+          Giriş Yap
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Not a member?{" "}
+
+      <p className="text-sm font-light mt-8 text-center" style={{ color: "#6b7b6c" }}>
+        Üye değil misiniz?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline"
+          className="underline transition-opacity hover:opacity-60"
+          style={{ color: "#1e2b20" }}
           data-testid="register-button"
         >
-          Join us
+          Hesap Oluşturun
         </button>
-        .
-      </span>
+      </p>
     </div>
   )
 }

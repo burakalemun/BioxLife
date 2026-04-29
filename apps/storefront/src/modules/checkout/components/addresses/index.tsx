@@ -5,7 +5,7 @@ import compareAddresses from "@lib/util/compare-addresses"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Divider from "@modules/common/components/divider"
-import { Heading, Text } from "@modules/common/components/ui"
+import { Heading, Text, clx } from "@modules/common/components/ui"
 import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useActionState } from "react"
@@ -40,23 +40,31 @@ const Addresses = ({
   const [message, formAction] = useActionState(setAddresses, null)
 
   return (
-    <div className="bg-white">
+    <div className="bg-transparent">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
-          className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
+          className={clx(
+            "flex flex-row text-2xl gap-x-2 items-baseline font-semibold tracking-wide",
+            {
+              "opacity-50 pointer-events-none select-none":
+                !isOpen && !cart?.shipping_address,
+            }
+          )}
+          style={{ color: "#1e2b20", fontFamily: "'Playfair Display', serif" }}
         >
-          Shipping Address
-          {!isOpen && <CheckCircleSolid />}
+          Teslimat Adresi
+          {!isOpen && <CheckCircleSolid color="#c9a84c" />}
         </Heading>
         {!isOpen && cart?.shipping_address && (
           <Text>
             <button
               onClick={handleEdit}
-              className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+              className="text-xs uppercase tracking-widest font-semibold transition-opacity hover:opacity-70"
+              style={{ color: "#c9a84c" }}
               data-testid="edit-address-button"
             >
-              Edit
+              Düzenle
             </button>
           </Text>
         )}
@@ -75,94 +83,100 @@ const Addresses = ({
               <div>
                 <Heading
                   level="h2"
-                  className="text-3xl-regular gap-x-4 pb-6 pt-8"
+                  className="text-xl gap-x-4 pb-6 pt-8 font-semibold tracking-wide"
+                  style={{ color: "#1e2b20", fontFamily: "'Playfair Display', serif" }}
                 >
-                  Billing address
+                  Fatura Adresi
                 </Heading>
 
                 <BillingAddress cart={cart} />
               </div>
             )}
-            <SubmitButton className="mt-6" data-testid="submit-address-button">
-              Continue to delivery
-            </SubmitButton>
+            <button
+              type="submit"
+              className="w-full py-4 mt-6 uppercase tracking-[0.2em] text-xs font-semibold transition-all hover:opacity-90"
+              style={{ background: "#1e2b20", color: "#f5f0e8" }}
+              data-testid="submit-address-button"
+            >
+              Teslimat Yöntemine Geç
+            </button>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
         </form>
       ) : (
         <div>
-          <div className="text-small-regular">
+          <div className="text-sm">
             {cart && cart.shipping_address ? (
-              <div className="flex items-start gap-x-8">
-                <div className="flex items-start gap-x-1 w-full">
+              <div className="flex flex-col md:flex-row items-start gap-8">
+                <div className="flex flex-col md:flex-row items-start gap-x-1 w-full gap-y-6">
                   <div
-                    className="flex flex-col w-1/3"
+                    className="flex flex-col w-full md:w-1/3"
                     data-testid="shipping-address-summary"
                   >
-                    <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Shipping Address
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    <span className="font-semibold uppercase tracking-widest text-xs mb-2" style={{ color: "#1e2b20" }}>
+                      Teslimat Adresi
+                    </span>
+                    <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                       {cart.shipping_address.first_name}{" "}
                       {cart.shipping_address.last_name}
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    </span>
+                    <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                       {cart.shipping_address.address_1}{" "}
                       {cart.shipping_address.address_2}
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    </span>
+                    <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                       {cart.shipping_address.postal_code},{" "}
                       {cart.shipping_address.city}
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    </span>
+                    <span className="text-sm" style={{ color: "#6b7b6c" }}>
                       {cart.shipping_address.country_code?.toUpperCase()}
-                    </Text>
+                    </span>
                   </div>
 
                   <div
-                    className="flex flex-col w-1/3 "
+                    className="flex flex-col w-full md:w-1/3"
                     data-testid="shipping-contact-summary"
                   >
-                    <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Contact
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    <span className="font-semibold uppercase tracking-widest text-xs mb-2" style={{ color: "#1e2b20" }}>
+                      İletişim Bilgileri
+                    </span>
+                    <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                       {cart.shipping_address.phone}
-                    </Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    </span>
+                    <span className="text-sm" style={{ color: "#6b7b6c" }}>
                       {cart.email}
-                    </Text>
+                    </span>
                   </div>
 
                   <div
-                    className="flex flex-col w-1/3"
+                    className="flex flex-col w-full md:w-1/3"
                     data-testid="billing-address-summary"
                   >
-                    <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Billing Address
-                    </Text>
+                    <span className="font-semibold uppercase tracking-widest text-xs mb-2" style={{ color: "#1e2b20" }}>
+                      Fatura Adresi
+                    </span>
 
                     {sameAsBilling ? (
-                      <Text className="txt-medium text-ui-fg-subtle">
-                        Billing and delivery address are the same.
-                      </Text>
+                      <span className="text-sm" style={{ color: "#6b7b6c" }}>
+                        Fatura ve teslimat adresi aynı.
+                      </span>
                     ) : (
                       <>
-                        <Text className="txt-medium text-ui-fg-subtle">
+                        <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                           {cart.billing_address?.first_name}{" "}
                           {cart.billing_address?.last_name}
-                        </Text>
-                        <Text className="txt-medium text-ui-fg-subtle">
+                        </span>
+                        <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                           {cart.billing_address?.address_1}{" "}
                           {cart.billing_address?.address_2}
-                        </Text>
-                        <Text className="txt-medium text-ui-fg-subtle">
+                        </span>
+                        <span className="text-sm mb-1" style={{ color: "#6b7b6c" }}>
                           {cart.billing_address?.postal_code},{" "}
                           {cart.billing_address?.city}
-                        </Text>
-                        <Text className="txt-medium text-ui-fg-subtle">
+                        </span>
+                        <span className="text-sm" style={{ color: "#6b7b6c" }}>
                           {cart.billing_address?.country_code?.toUpperCase()}
-                        </Text>
+                        </span>
                       </>
                     )}
                   </div>
@@ -176,7 +190,8 @@ const Addresses = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
+      
+      <div className="w-full h-px my-8" style={{ background: "rgba(30,43,32,0.15)" }} />
     </div>
   )
 }

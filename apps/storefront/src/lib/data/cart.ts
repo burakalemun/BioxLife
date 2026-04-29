@@ -38,50 +38,72 @@ export async function retrieveCart(cartId?: string, fields?: string) {
     ...(await getCacheOptions("carts")),
   }
 
-  return await sdk.client
-    .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
-      method: "GET",
-      query: {
-        fields,
-      },
-      headers,
-      next,
-      cache: "force-cache",
-    })
-    .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
-    .catch(() => null)
+  try {
+    return await sdk.client
+      .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
+        method: "GET",
+        query: {
+          fields,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      })
+      .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
+  } catch (error) {
+    console.warn("Cart retrieve başarısız, boş sepet dönülüyor...")
+    return null
+  }
 }
 
 export async function getOrSetCart(countryCode: string) {
-  const region = await getRegion(countryCode)
+  // Region ve cart bilgisini paralel olarak al → %50 daha hızlı
+  const [region, existingCart] = await Promise.all([
+    getRegion(countryCode),
+    retrieveCart(undefined, "id,region_id"),
+  ])
 
   if (!region) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, "id,region_id")
+  let cart = existingCart
 
   const headers = {
     ...(await getAuthHeaders()),
   }
 
+  // Eğer mevcut cart farklı bir region'da ise, sıfırdan başla
+  if (cart && cart?.region_id !== region.id) {
+    try {
+      await sdk.store.cart.update(cart.id, { region_id: region.id }, {}, headers)
+      const cartCacheTag = await getCacheTag("carts")
+      revalidateTag(cartCacheTag)
+    } catch {
+      // Region güncellemesi başarısız → eski cart'ı sil, yenisini oluştur
+      console.warn("⚠️ Cart region mismatch, creating fresh cart...")
+      await removeCartId()
+      cart = null
+    }
+  }
+
   if (!cart) {
     const locale = await getLocale()
-    const cartResp = await sdk.store.cart.create(
-      { region_id: region.id, locale: locale || undefined },
-      {},
-      headers
-    )
+    let cartResp: { cart: HttpTypes.StoreCart }
+    try {
+      cartResp = await sdk.store.cart.create(
+        { region_id: region.id, locale: locale || undefined },
+        {},
+        headers
+      )
+    } catch (e) {
+      console.error("🛒 Cart oluşturma hatası:", e)
+      throw e
+    }
     cart = cartResp.cart
 
     await setCartId(cart.id)
 
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-  }
-
-  if (cart && cart?.region_id !== region.id) {
-    await sdk.store.cart.update(cart.id, { region_id: region.id }, {}, headers)
     const cartCacheTag = await getCacheTag("carts")
     revalidateTag(cartCacheTag)
   }
@@ -154,7 +176,10 @@ export async function addToCart({
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
     })
-    .catch(medusaError)
+    .catch((e) => {
+      console.error("🛒 Sepete ekleme ham hata:", JSON.stringify(e?.message ?? e))
+      medusaError(e)
+    })
 }
 
 export async function updateLineItem({

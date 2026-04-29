@@ -1,23 +1,35 @@
-import { Heading, Text } from "@modules/common/components/ui"
-
-import InteractiveLink from "@modules/common/components/interactive-link"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 const EmptyCartMessage = () => {
   return (
-    <div className="py-48 px-2 flex flex-col justify-center items-start" data-testid="empty-cart-message">
-      <Heading
-        level="h1"
-        className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
-      >
-        Cart
-      </Heading>
-      <Text className="text-base-regular mt-4 mb-6 max-w-[32rem]">
-        You don&apos;t have anything in your cart. Let&apos;s change that, use
-        the link below to start browsing our products.
-      </Text>
-      <div>
-        <InteractiveLink href="/store">Explore products</InteractiveLink>
+    <div
+      className="py-32 px-6 flex flex-col justify-center items-center text-center"
+      data-testid="empty-cart-message"
+    >
+      <div className="w-16 h-16 mx-auto mb-8 flex items-center justify-center rounded-full" style={{ background: "#ede8de" }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7b6c" strokeWidth="1.2">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 01-8 0" />
+        </svg>
       </div>
+
+      <h1
+        className="text-4xl font-medium mb-4"
+        style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}
+      >
+        Sepetiniz Boş
+      </h1>
+
+      <p className="text-base font-light mb-10 max-w-md mx-auto" style={{ color: "#6b7b6c" }}>
+        Sepetinizde şu an herhangi bir ürün bulunmuyor. Doğanın saf özlerini keşfetmeye başlayın ve kendinize bir iyilik yapın.
+      </p>
+
+      <LocalizedClientLink href="/store">
+        <button className="btn-primary" style={{ background: "#1e2b20", color: "#f5f0e8", maxWidth: "240px" }}>
+          Koleksiyonu Keşfet
+        </button>
+      </LocalizedClientLink>
     </div>
   )
 }

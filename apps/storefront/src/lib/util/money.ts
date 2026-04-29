@@ -13,14 +13,17 @@ export const convertToLocale = ({
   currency_code,
   minimumFractionDigits,
   maximumFractionDigits,
-  locale = "en-US",
+  locale = "tr-TR",
 }: ConvertToLocaleParams) => {
+  // Medusa fiyatları en küçük birimde saklar (kuruş). Tam birime çevir.
+  const displayAmount = amount / 100
+
   return currency_code && !isEmpty(currency_code)
     ? new Intl.NumberFormat(locale, {
         style: "currency",
-        currency: currency_code,
+        currency: currency_code.toUpperCase(),
         minimumFractionDigits,
         maximumFractionDigits,
-      }).format(amount)
-    : amount.toString()
+      }).format(displayAmount)
+    : displayAmount.toString()
 }

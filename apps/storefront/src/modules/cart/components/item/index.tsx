@@ -1,14 +1,12 @@
 "use client"
 
-import { Table, Text, clx } from "@modules/common/components/ui"
+import { clx } from "@modules/common/components/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
-import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
@@ -40,19 +38,25 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       })
   }
 
-  // TODO: Update this to grab the actual max inventory
   const maxQtyFromInventory = 10
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
 
+  const textColor = type === "preview" ? "#f5f0e8" : "#1e2b20"
+  const subTextColor = type === "preview" ? "rgba(245,240,232,0.7)" : "#6b7b6c"
+
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <div 
+      className={clx("grid gap-4 items-center w-full", {
+        "grid-cols-[1fr_100px_100px]": type === "full",
+        "grid-cols-[1fr_auto_auto]": type === "preview",
+      })} 
+      data-testid="product-row"
+    >
+      {/* Product Image & Details */}
+      <div className="flex items-center gap-x-4">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
-          className={clx("flex", {
-            "w-16": type === "preview",
-            "small:w-24 w-12": type === "full",
-          })}
+          className="w-20 md:w-24 shrink-0"
         >
           <Thumbnail
             thumbnail={item.thumbnail}
@@ -60,84 +64,65 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
             size="square"
           />
         </LocalizedClientLink>
-      </Table.Cell>
 
-      <Table.Cell className="text-left">
-        <Text
-          className="txt-medium-plus text-ui-fg-base"
-          data-testid="product-title"
-        >
-          {item.product_title}
-        </Text>
-        <LineItemOptions variant={item.variant} data-testid="product-variant" />
-      </Table.Cell>
+        <div className="flex flex-col">
+          <span
+            className="text-sm md:text-base font-semibold"
+            style={{ color: textColor, fontFamily: "'Playfair Display', serif" }}
+            data-testid="product-title"
+          >
+            {item.product_title}
+          </span>
+          <div style={{ color: subTextColor }}>
+            <LineItemOptions variant={item.variant} data-testid="product-variant" />
+          </div>
+          {type === "full" && (
+            <div className="mt-2 text-xs">
+              <DeleteButton id={item.id} data-testid="product-delete-button" />
+            </div>
+          )}
+        </div>
+      </div>
 
-      {type === "full" && (
-        <Table.Cell>
-          <div className="flex gap-2 items-center w-28">
-            <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <CartItemSelect
+      {/* Quantity Selector */}
+      {type === "full" ? (
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex items-center gap-x-2">
+            <select
               value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
+              onChange={(e) => changeQuantity(parseInt(e.target.value))}
+              className="w-16 h-10 px-2 text-center bg-transparent border focus:outline-none transition-colors"
+              style={{ borderColor: "rgba(30,43,32,0.2)", color: textColor }}
               data-testid="product-select-button"
             >
-              {/* TODO: Update this with the v2 way of managing inventory */}
               {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
+                { length: Math.min(maxQuantity, 10) },
                 (_, i) => (
                   <option value={i + 1} key={i}>
                     {i + 1}
                   </option>
                 )
               )}
-
-              <option value={1} key={1}>
-                1
-              </option>
-            </CartItemSelect>
+            </select>
             {updating && <Spinner />}
           </div>
           <ErrorMessage error={error} data-testid="product-error-message" />
-        </Table.Cell>
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <span className="text-sm" style={{ color: subTextColor }}>{item.quantity} Adet</span>
+        </div>
       )}
 
-      {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
-          <LineItemUnitPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </Table.Cell>
-      )}
-
-      <Table.Cell className="!pr-0">
-        <span
-          className={clx("!pr-0", {
-            "flex flex-col items-end h-full justify-center": type === "preview",
-          })}
-        >
-          {type === "preview" && (
-            <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
-              <LineItemUnitPrice
-                item={item}
-                style="tight"
-                currencyCode={currencyCode}
-              />
-            </span>
-          )}
-          <LineItemPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </span>
-      </Table.Cell>
-    </Table.Row>
+      {/* Total Price */}
+      <div className="flex justify-end items-center" style={{ color: textColor }}>
+        <LineItemPrice
+          item={item}
+          style="tight"
+          currencyCode={currencyCode}
+        />
+      </div>
+    </div>
   )
 }
 

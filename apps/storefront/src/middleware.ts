@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "dk"
+const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "tr"
 
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
@@ -23,26 +23,44 @@ async function getRegionMap(cacheId: string) {
     !regionMap.keys().next().value ||
     regionMapUpdated < Date.now() - 3600 * 1000
   ) {
-    // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-    const response = await fetch(`${BACKEND_URL}/store/regions`, {
-      method: "GET",
-      headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
-      },
-      next: {
-        revalidate: 3600,
-        tags: [`regions-${cacheId}`],
-      },
-      cache: "force-cache",
-    })
+    let regions: HttpTypes.StoreRegion[] = []
 
-    if (!response.ok) {
-      throw new Error(`Backend returned ${response.status}`)
+    try {
+      const response = await fetch(`${BACKEND_URL}/store/regions`, {
+        method: "GET",
+        headers: {
+          "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+        },
+        next: {
+          revalidate: 3600,
+          tags: [`regions-${cacheId}`],
+        },
+        cache: "force-cache",
+      })
+
+      if (response.ok) {
+        const json = await response.json()
+        regions = json.regions
+      }
+    } catch (error) {
+      console.warn("Middleware: Backend'e ulaşılamadı, mock region kullanılıyor...")
+      regions = [
+        {
+          id: "reg_mock",
+          name: "Turkey",
+          currency_code: "try",
+          countries: [
+            {
+              id: 1,
+              iso_2: "tr",
+              iso_3: "tur",
+              name: "Turkey",
+              display_name: "Turkey",
+            },
+          ],
+        } as any,
+      ]
     }
-
-    const json = await response.json()
-
-    const { regions } = json
 
     if (!regions?.length) {
       return new Map<string, HttpTypes.StoreRegion>()

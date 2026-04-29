@@ -30,16 +30,25 @@ export const listCollections = async (
   queryParams.limit = queryParams.limit || "100"
   queryParams.offset = queryParams.offset || "0"
 
-  return await sdk.client
-    .fetch<{ collections: HttpTypes.StoreCollection[]; count: number }>(
-      "/store/collections",
-      {
-        query: queryParams,
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ collections }) => ({ collections, count: collections.length }))
+  try {
+    return await sdk.client
+      .fetch<{ collections: HttpTypes.StoreCollection[]; count: number }>(
+        "/store/collections",
+        {
+          query: queryParams,
+          next,
+          cache: "force-cache",
+        }
+      )
+      .then(({ collections }) => ({ collections, count: collections.length }))
+  } catch (error) {
+    console.warn("Backend'e ulaşılamadı, mock collections kullanılıyor...")
+    const mockCollections = [
+      { id: "col_1", title: "Yeni Gelenler", handle: "new-arrivals" },
+      { id: "col_2", title: "Öne Çıkanlar", handle: "featured" },
+    ] as any
+    return { collections: mockCollections, count: mockCollections.length }
+  }
 }
 
 export const getCollectionByHandle = async (

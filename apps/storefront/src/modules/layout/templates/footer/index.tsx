@@ -1,157 +1,202 @@
-import { listCategories } from "@lib/data/categories";
-import { listCollections } from "@lib/data/collections";
-import { Text, clx } from "@modules/common/components/ui";
-
-import LocalizedClientLink from "@modules/common/components/localized-client-link";
-import MedusaCTA from "@modules/layout/components/medusa-cta";
+import { listCategories } from "@lib/data/categories"
+import { listCollections } from "@lib/data/collections"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 export default async function Footer() {
-  const { collections } = await listCollections({
-    fields: "*products",
-  });
-  const productCategories = await listCategories();
+  const { collections } = await listCollections({ fields: "*products" })
+  const productCategories = await listCategories()
+
+  const topCategories = productCategories
+    ?.filter((c: any) => !c.parent_category)
+    .slice(0, 6) || []
+
+  const topCollections = collections?.slice(0, 5) || []
 
   return (
-    <footer className="border-t border-ui-border-base w-full">
-      <div className="content-container flex flex-col w-full">
-        <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
+    <footer style={{ background: "#1e2b20" }}>
+
+      {/* Main footer grid */}
+      <div className="content-container py-16 md:py-20">
+        <div className="grid grid-cols-1 small:grid-cols-[1.5fr_1fr_1fr_1fr] gap-12">
+
+          {/* Brand column */}
           <div>
-            <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
-            >
-              Medusa Store
+            <LocalizedClientLink href="/">
+              <span
+                className="text-lg uppercase tracking-[0.25em] font-medium block mb-5"
+                style={{ fontFamily: "'Playfair Display', serif", color: "#f5f0e8" }}
+              >
+                BioxLife
+              </span>
             </LocalizedClientLink>
+            <p className="text-sm font-light leading-relaxed mb-8" style={{ color: "rgba(245,240,232,0.45)" }}>
+              Geleneksel aktar bilgeliğini modern saflıkla buluşturuyoruz. Tarladan şişeye, her damlada doğanın özü.
+            </p>
+
+            {/* Social links */}
+            <div className="flex gap-4">
+              {[
+                { label: "Instagram", href: "#", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg> },
+                { label: "X", href: "#", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M20 4 4 20"/></svg> },
+                { label: "Pinterest", href: "#", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="17" y2="22"/><path d="M12 17a5 5 0 0 0 5-5c0-2.76-2.24-5-5-5a5 5 0 0 0-3 9"/><circle cx="12" cy="12" r="10"/></svg> },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="w-9 h-9 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:border-[#c9a84c] hover:text-[#c9a84c]"
+                  style={{ border: "1px solid rgba(245,240,232,0.12)", color: "rgba(245,240,232,0.5)" }}
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
-            {productCategories && productCategories?.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
-                  Categories
-                </span>
-                <ul
-                  className="grid grid-cols-1 gap-2"
-                  data-testid="footer-categories"
-                >
-                  {productCategories?.slice(0, 6).map((c) => {
-                    if (c.parent_category) {
-                      return;
-                    }
 
-                    const children =
-                      c.category_children?.map((child) => ({
-                        name: child.name,
-                        handle: child.handle,
-                        id: child.id,
-                      })) || null;
-
-                    return (
-                      <li
-                        className="flex flex-col gap-2 text-ui-fg-subtle txt-small"
-                        key={c.id}
-                      >
-                        <LocalizedClientLink
-                          className={clx(
-                            "hover:text-ui-fg-base",
-                            children && "txt-small-plus"
-                          )}
-                          href={`/categories/${c.handle}`}
-                          data-testid="category-link"
-                        >
-                          {c.name}
-                        </LocalizedClientLink>
-                        {children && (
-                          <ul className="grid grid-cols-1 ml-3 gap-2">
-                            {children &&
-                              children.map((child) => (
-                                <li key={child.id}>
-                                  <LocalizedClientLink
-                                    className="hover:text-ui-fg-base"
-                                    href={`/categories/${child.handle}`}
-                                    data-testid="category-link"
-                                  >
-                                    {child.name}
-                                  </LocalizedClientLink>
-                                </li>
-                              ))}
-                          </ul>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-            {collections && collections.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
-                  Collections
-                </span>
-                <ul
-                  className={clx(
-                    "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
-                    {
-                      "grid-cols-2": (collections?.length || 0) > 3,
-                    }
-                  )}
+          {/* Kategoriler */}
+          <div>
+            <p className="label-caps text-[10px] mb-5 pb-3" style={{ color: "#c9a84c", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+              Kategoriler
+            </p>
+            <ul className="flex flex-col gap-3">
+              <li>
+                <LocalizedClientLink
+                  href="/store"
+                  className="text-sm font-light transition-colors hover:text-[#c9a84c]"
+                  style={{ color: "rgba(245,240,232,0.55)" }}
                 >
-                  {collections?.slice(0, 6).map((c) => (
-                    <li key={c.id}>
-                      <LocalizedClientLink
-                        className="hover:text-ui-fg-base"
-                        href={`/collections/${c.handle}`}
-                      >
-                        {c.title}
-                      </LocalizedClientLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Medusa</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
-                <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                  Tüm Ürünler
+                </LocalizedClientLink>
+              </li>
+              {topCategories.map((c: any) => (
+                <li key={c.id}>
+                  <LocalizedClientLink
+                    href={`/store?category_id=${c.id}`}
+                    className="text-sm font-light transition-colors hover:text-[#c9a84c]"
+                    style={{ color: "rgba(245,240,232,0.55)" }}
                   >
-                    GitHub
-                  </a>
+                    {c.name}
+                  </LocalizedClientLink>
                 </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Koleksiyonlar */}
+          <div>
+            <p className="label-caps text-[10px] mb-5 pb-3" style={{ color: "#c9a84c", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+              Koleksiyonlar
+            </p>
+            <ul className="flex flex-col gap-3">
+              {topCollections.length > 0 ? (
+                topCollections.map((c) => (
+                  <li key={c.id}>
+                    <LocalizedClientLink
+                      href={`/collections/${c.handle}`}
+                      className="text-sm font-light transition-colors hover:text-[#c9a84c]"
+                      style={{ color: "rgba(245,240,232,0.55)" }}
+                    >
+                      {c.title}
+                    </LocalizedClientLink>
+                  </li>
+                ))
+              ) : (
                 <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                  <LocalizedClientLink
+                    href="/store"
+                    className="text-sm font-light transition-colors hover:text-[#c9a84c]"
+                    style={{ color: "rgba(245,240,232,0.55)" }}
                   >
-                    Documentation
-                  </a>
+                    Koleksiyonu Keşfet
+                  </LocalizedClientLink>
                 </li>
-                <li>
-                  <a
-                    href="https://github.com/medusajs/dtc-starter"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+              )}
+            </ul>
+          </div>
+
+          {/* Kurumsal */}
+          <div>
+            <p className="label-caps text-[10px] mb-5 pb-3" style={{ color: "#c9a84c", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+              BioxLife
+            </p>
+            <ul className="flex flex-col gap-3">
+              {[
+                { label: "Hikayemiz", href: "/about" },
+                { label: "Journal", href: "/journal" },
+                { label: "İletişim", href: "/contact" },
+                { label: "SSS", href: "/faq" },
+                { label: "Hesabım", href: "/account" },
+                { label: "Siparişlerim", href: "/account/orders" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <LocalizedClientLink
+                    href={link.href}
+                    className="text-sm font-light transition-colors hover:text-[#c9a84c]"
+                    style={{ color: "rgba(245,240,232,0.55)" }}
                   >
-                    Source code
-                  </a>
+                    {link.label}
+                  </LocalizedClientLink>
                 </li>
-              </ul>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Certifications bar */}
+      <div style={{ borderTop: "1px solid rgba(245,240,232,0.06)" }}>
+        <div className="content-container py-5">
+          <div className="flex flex-col small:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              {["%100 Vegan", "Cruelty Free", "GC/MS Onaylı", "Doğal İçerik"].map((cert) => (
+                <span key={cert} className="flex items-center gap-1.5 label-caps text-[9px]" style={{ color: "rgba(245,240,232,0.3)" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+                  {cert}
+                </span>
+              ))}
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Payment icons */}
+              {["VISA", "MC", "AMEX", "iyzico"].map((p) => (
+                <span
+                  key={p}
+                  className="px-2 py-1 text-[8px] font-bold tracking-wider rounded"
+                  style={{ background: "rgba(245,240,232,0.06)", color: "rgba(245,240,232,0.35)", border: "1px solid rgba(245,240,232,0.08)" }}
+                >
+                  {p}
+                </span>
+              ))}
             </div>
           </div>
         </div>
-        <div className="flex w-full mb-16 justify-between text-ui-fg-muted">
-          <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Medusa Store. All rights reserved.
-          </Text>
-          <MedusaCTA />
+      </div>
+
+      {/* Bottom bar */}
+      <div style={{ borderTop: "1px solid rgba(245,240,232,0.06)" }}>
+        <div className="content-container py-5">
+          <div className="flex flex-col small:flex-row items-center justify-between gap-3">
+            <p className="text-[10px] font-light" style={{ color: "rgba(245,240,232,0.25)" }}>
+              © {new Date().getFullYear()} BioxLife. Tüm hakları saklıdır.
+            </p>
+            <div className="flex items-center gap-6">
+              {[
+                { label: "Gizlilik Politikası", href: "/privacy" },
+                { label: "Kullanım Koşulları", href: "/terms" },
+                { label: "KVKK", href: "/kvkk" },
+              ].map((link) => (
+                <LocalizedClientLink
+                  key={link.href}
+                  href={link.href}
+                  className="text-[10px] font-light transition-colors hover:text-[#c9a84c]"
+                  style={{ color: "rgba(245,240,232,0.25)" }}
+                >
+                  {link.label}
+                </LocalizedClientLink>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

@@ -6,8 +6,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "npm -r dev",
-    "build": "npm -r build",
+    "dev": "cd apps/backend && npm run dev",
+    "build": "cd apps/backend && npm run build",
     "start": "turbo start",
     "lint": "turbo lint",
     "test": "turbo test",

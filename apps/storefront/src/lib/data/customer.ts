@@ -29,18 +29,22 @@ export const retrieveCustomer =
       ...(await getCacheOptions("customers")),
     }
 
-    return await sdk.client
-      .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
-        method: "GET",
-        query: {
-          fields: "*orders",
-        },
-        headers,
-        next,
-        cache: "force-cache",
-      })
-      .then(({ customer }) => customer)
-      .catch(() => null)
+    try {
+      return await sdk.client
+        .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
+          method: "GET",
+          query: {
+            fields: "*orders",
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        })
+        .then(({ customer }) => customer)
+    } catch (error) {
+      console.warn("Customer retrieve başarısız, misafir modu aktif...")
+      return null
+    }
   }
 
 export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
@@ -58,6 +62,32 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
 
   return updateRes
 }
+
+export const updateCustomerPassword = async (
+  _currentState: Record<string, unknown>,
+  formData: FormData
+) => {
+  const oldPassword = formData.get("old_password") as string
+  const newPassword = formData.get("new_password") as string
+  const confirmPassword = formData.get("confirm_password") as string
+
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: "Yeni şifreler eşleşmiyor" }
+  }
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  try {
+    // Medusa v2 Auth Update
+    await sdk.auth.update("customer", "emailpass", { password: newPassword }, headers)
+    return { success: true, error: null }
+  } catch (error: any) {
+    return { success: false, error: error.message || "Şifre güncellenirken bir hata oluştu" }
+  }
+}
+
 
 export async function signup(_currentState: unknown, formData: FormData) {
   const password = formData.get("password") as string

@@ -1,38 +1,55 @@
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-type ProductInfoProps = {
-  product: HttpTypes.StoreProduct
-}
-
-const ProductInfo = ({ product }: ProductInfoProps) => {
+const ProductInfo = ({ product }: { product: HttpTypes.StoreProduct }) => {
   return (
     <div id="product-info">
-      <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
-        {product.collection && (
+      {product.collection && (
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-6 h-px" style={{ background: "#c9a84c" }} />
           <LocalizedClientLink
             href={`/collections/${product.collection.handle}`}
-            className="text-medium text-ui-fg-muted hover:text-ui-fg-subtle"
+            className="label-caps transition-colors hover:opacity-70"
+            style={{ color: "#c9a84c", fontSize: "10px" }}
           >
             {product.collection.title}
           </LocalizedClientLink>
-        )}
-        <Heading
-          level="h2"
-          className="text-3xl leading-10 text-ui-fg-base"
-          data-testid="product-title"
-        >
-          {product.title}
-        </Heading>
+        </div>
+      )}
 
-        <Text
-          className="text-medium text-ui-fg-subtle whitespace-pre-line"
+      <h1
+        className="text-4xl md:text-5xl font-medium leading-tight mb-4"
+        data-testid="product-title"
+        style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}
+      >
+        {product.title}
+      </h1>
+
+      {product.subtitle && (
+        <p className="text-base font-light mb-6" style={{ color: "#6b7b6c" }}>
+          {product.subtitle}
+        </p>
+      )}
+
+      <div className="flex items-center gap-3 mb-8">
+        <span className="label-caps" style={{ color: "#6b7b6c", fontSize: "10px" }}>
+          Menşei: Türkiye
+        </span>
+        <span style={{ color: "rgba(30,43,32,0.2)" }}>·</span>
+        <span className="label-caps" style={{ color: "#6b7b6c", fontSize: "10px" }}>
+          %100 Saf
+        </span>
+      </div>
+
+      {product.description && (
+        <p
+          className="text-sm font-light leading-loose"
           data-testid="product-description"
+          style={{ color: "#4a5e4c" }}
         >
           {product.description}
-        </Text>
-      </div>
+        </p>
+      )}
     </div>
   )
 }

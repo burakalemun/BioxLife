@@ -20,31 +20,31 @@ const Register = ({ setCurrentView }: Props) => {
       className="max-w-sm flex flex-col items-center"
       data-testid="register-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
+      <h1 className="text-large-semi uppercase mb-6 text-sage-900 text-center">
+        BioxLife Dünyasına Katılın
       </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+      <p className="text-center text-base-regular text-sage-600 mb-4">
+        BioxLife üyelik profilinizi oluşturun ve size özel ayrıcalıklı alışveriş 
+        deneyiminin tadını çıkarın.
       </p>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="First name"
+            label="Ad"
             name="first_name"
             required
             autoComplete="given-name"
             data-testid="first-name-input"
           />
           <Input
-            label="Last name"
+            label="Soyad"
             name="last_name"
             required
             autoComplete="family-name"
             data-testid="last-name-input"
           />
           <Input
-            label="Email"
+            label="E-posta Adresi"
             name="email"
             required
             type="email"
@@ -52,14 +52,14 @@ const Register = ({ setCurrentView }: Props) => {
             data-testid="email-input"
           />
           <Input
-            label="Phone"
+            label="Telefon"
             name="phone"
             type="tel"
             autoComplete="tel"
             data-testid="phone-input"
           />
           <Input
-            label="Password"
+            label="Şifre"
             name="password"
             required
             type="password"
@@ -68,34 +68,34 @@ const Register = ({ setCurrentView }: Props) => {
           />
         </div>
         <ErrorMessage error={message} data-testid="register-error" />
-        <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
+        <span className="text-center text-sage-600 text-small-regular mt-6">
+          Hesap oluşturarak, BioxLife&apos;ın{" "}
           <LocalizedClientLink
-            href="/content/privacy-policy"
-            className="underline"
+            href="/privacy-policy"
+            className="underline text-gold-600"
           >
-            Privacy Policy
+            Gizlilik Politikası
           </LocalizedClientLink>{" "}
-          and{" "}
+          ve{" "}
           <LocalizedClientLink
-            href="/content/terms-of-use"
-            className="underline"
+            href="/terms-of-use"
+            className="underline text-gold-600"
           >
-            Terms of Use
-          </LocalizedClientLink>
-          .
+            Kullanım Koşullarını
+          </LocalizedClientLink>{" "}
+          kabul etmiş olursunuz.
         </span>
-        <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+        <SubmitButton className="w-full mt-6 bg-gold-600 hover:bg-gold-700 text-white rounded-full h-12" data-testid="register-button">
+          Kayıt Ol
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Already a member?{" "}
+      <span className="text-center text-sage-600 text-small-regular mt-6">
+        Zaten üye misiniz?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="underline"
+          className="underline text-gold-600 hover:text-gold-700"
         >
-          Sign in
+          Giriş Yap
         </button>
         .
       </span>

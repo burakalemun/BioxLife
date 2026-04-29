@@ -37,30 +37,52 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     }, [innerRef.current?.value])
 
     return (
-      <div>
+      <div className="flex flex-col w-full relative z-0 mt-6">
+        {/* Fake label for visual alignment with inputs */}
+        <span 
+          className="absolute -top-6 left-1 text-xs uppercase tracking-widest font-semibold"
+          style={{ color: "#1e2b20" }}
+        >
+          {placeholder}
+        </span>
         <div
           onFocus={() => innerRef.current?.focus()}
           onBlur={() => innerRef.current?.blur()}
           className={clx(
-            "relative flex items-center text-base-regular border border-ui-border-base bg-ui-bg-subtle rounded-md hover:bg-ui-bg-field-hover",
-            className,
-            {
-              "text-ui-fg-muted": isPlaceholder,
-            }
+            "relative flex items-center bg-transparent border transition-colors h-12 px-4",
+            className
           )}
+          style={{ 
+            borderColor: "rgba(30,43,32,0.2)",
+            color: isPlaceholder ? "#6b7b6c" : "#1e2b20" 
+          }}
         >
           <select
             ref={innerRef}
             defaultValue={defaultValue}
             {...props}
-            className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none "
+            className="appearance-none flex-1 bg-transparent border-none text-sm outline-none w-full"
+            onFocus={(e) => {
+              const parent = e.target.parentElement
+              if (parent) {
+                parent.style.borderColor = "#c9a84c"
+                parent.style.background = "rgba(201,168,76,0.05)"
+              }
+            }}
+            onBlur={(e) => {
+              const parent = e.target.parentElement
+              if (parent) {
+                parent.style.borderColor = "rgba(30,43,32,0.2)"
+                parent.style.background = "transparent"
+              }
+            }}
           >
             <option disabled value="">
-              {placeholder}
+              Seçiniz
             </option>
             {children}
           </select>
-          <span className="absolute right-4 inset-y-0 flex items-center pointer-events-none ">
+          <span className="absolute right-4 inset-y-0 flex items-center pointer-events-none" style={{ color: "#c9a84c" }}>
             <ChevronUpDown />
           </span>
         </div>

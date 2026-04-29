@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
+import FavoriteButton from "../favorite-button"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -126,13 +127,17 @@ export default function ProductActions({
 
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: 1,
+        countryCode,
+      })
+    } catch (e) {
+      console.error("Sepete ekleme hatası:", e)
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   return (
@@ -160,28 +165,45 @@ export default function ProductActions({
           )}
         </div>
 
-        <ProductPrice product={product} variant={selectedVariant} />
+        {/* Price always visible */}
+        <div className="mb-4">
+          <ProductPrice product={product} variant={selectedVariant} />
+        </div>
 
-        <Button
-          onClick={handleAddToCart}
-          disabled={
-            !inStock ||
-            !selectedVariant ||
-            !!disabled ||
-            isAdding ||
-            !isValidVariant
-          }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
-          data-testid="add-product-button"
-        >
-          {!selectedVariant && !options
-            ? "Select variant"
-            : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
-        </Button>
+        <div className="flex items-center gap-x-2">
+          <Button
+            onClick={handleAddToCart}
+            disabled={
+              !selectedVariant ||
+              !inStock ||
+              !!disabled ||
+              isAdding ||
+              !isValidVariant
+            }
+            variant="primary"
+            className="flex-1 h-12 bg-gold-600 hover:bg-gold-700 text-white rounded-full transition-all uppercase tracking-widest text-sm font-semibold disabled:bg-sage-200 disabled:text-sage-400 disabled:cursor-not-allowed"
+            isLoading={isAdding}
+            data-testid="add-product-button"
+          >
+            {isAdding 
+              ? "EKLENİYOR..." 
+              : !selectedVariant 
+                ? "SEÇENEK BELİRLEYİN" 
+                : !inStock 
+                  ? "STOKTA YOK" 
+                  : "SEPETE EKLE"}
+          </Button>
+
+          <FavoriteButton
+            productData={{
+              id: product.id!,
+              title: product.title,
+              handle: product.handle,
+              thumbnail: product.thumbnail,
+            }}
+            className="w-12 h-12 shrink-0 border border-[rgba(30,43,32,0.15)] rounded-full hover:border-[#c9a84c] flex items-center justify-center bg-transparent"
+          />
+        </div>
         <MobileActions
           product={product}
           variant={selectedVariant}

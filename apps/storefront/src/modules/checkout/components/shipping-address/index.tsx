@@ -97,9 +97,12 @@ const ShippingAddress = ({
   return (
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
-        <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
-            {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
+        <div 
+          className="mb-8 flex flex-col gap-y-4 p-5 border"
+          style={{ borderColor: "rgba(201,168,76,0.3)", background: "rgba(201,168,76,0.05)" }}
+        >
+          <p className="text-sm font-semibold" style={{ color: "#1e2b20" }}>
+            {`Merhaba ${customer.first_name}, kayıtlı adreslerinden birini kullanmak ister misin?`}
           </p>
           <AddressSelect
             addresses={customer.addresses}
@@ -110,7 +113,7 @@ const ShippingAddress = ({
             }
             onSelect={setFormAddress}
           />
-        </Container>
+        </div>
       )}
       <div className="grid grid-cols-2 gap-4">
         <Input

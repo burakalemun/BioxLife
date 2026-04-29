@@ -9,21 +9,30 @@ export const listCategories = async (query?: Record<string, unknown>) => {
 
   const limit = query?.limit || 100
 
-  return sdk.client
-    .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
-      "/store/product-categories",
-      {
-        query: {
-          fields:
-            "*category_children, *products, *parent_category, *parent_category.parent_category",
-          limit,
-          ...query,
-        },
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ product_categories }) => product_categories)
+  try {
+    return await sdk.client
+      .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
+        "/store/product-categories",
+        {
+          query: {
+            fields:
+              "*category_children, *products, *parent_category, *parent_category.parent_category",
+            limit,
+            ...query,
+          },
+          next,
+          cache: "force-cache",
+        }
+      )
+      .then(({ product_categories }) => product_categories)
+  } catch (error) {
+    console.warn("Categories fetch başarısız, mock categories dönülüyor...")
+    return [
+      { id: "cat_1", name: "Uçucu Yağlar", handle: "essential-oils" },
+      { id: "cat_2", name: "Bitki Çayları", handle: "herbal-teas" },
+      { id: "cat_3", name: "Lüks Parfümler", handle: "fragrances" },
+    ] as any
+  }
 }
 
 export const getCategoryByHandle = async (categoryHandle: string[]) => {

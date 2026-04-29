@@ -48,31 +48,36 @@ const AddAddress = ({
   return (
     <>
       <button
-        className="border border-ui-border-base rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between"
+        className="border p-6 min-h-[220px] h-full w-full flex flex-col items-center justify-center gap-4 transition-all"
+        style={{ borderColor: "rgba(30,43,32,0.1)", background: "rgba(30,43,32,0.02)" }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.05)"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)" }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(30,43,32,0.02)"; e.currentTarget.style.borderColor = "rgba(30,43,32,0.1)" }}
         onClick={open}
         data-testid="add-address-button"
       >
-        <span className="text-base-semi">New address</span>
-        <Plus />
+        <div className="w-12 h-12 flex items-center justify-center border transition-colors" style={{ borderColor: "#c9a84c", color: "#c9a84c", borderRadius: "50%" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span className="text-lg font-medium mt-2" style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}>Yeni Adres Ekle</span>
       </button>
 
       <Modal isOpen={state} close={close} data-testid="add-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Add address</Heading>
+          <h2 className="text-2xl font-medium mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}>Yeni Adres Ekle</h2>
         </Modal.Title>
         <form action={formAction}>
           <Modal.Body>
             <div className="flex flex-col gap-y-2">
               <div className="grid grid-cols-2 gap-x-2">
                 <Input
-                  label="First name"
+                  label="Ad"
                   name="first_name"
                   required
                   autoComplete="given-name"
                   data-testid="first-name-input"
                 />
                 <Input
-                  label="Last name"
+                  label="Soyad"
                   name="last_name"
                   required
                   autoComplete="family-name"
@@ -80,34 +85,34 @@ const AddAddress = ({
                 />
               </div>
               <Input
-                label="Company"
+                label="Şirket (İsteğe bağlı)"
                 name="company"
                 autoComplete="organization"
                 data-testid="company-input"
               />
               <Input
-                label="Address"
+                label="Adres"
                 name="address_1"
                 required
                 autoComplete="address-line1"
                 data-testid="address-1-input"
               />
               <Input
-                label="Apartment, suite, etc."
+                label="Daire, Kat vb."
                 name="address_2"
                 autoComplete="address-line2"
                 data-testid="address-2-input"
               />
               <div className="grid grid-cols-[144px_1fr] gap-x-2">
                 <Input
-                  label="Postal code"
+                  label="Posta Kodu"
                   name="postal_code"
                   required
                   autoComplete="postal-code"
                   data-testid="postal-code-input"
                 />
                 <Input
-                  label="City"
+                  label="Şehir"
                   name="city"
                   required
                   autoComplete="locality"
@@ -115,7 +120,7 @@ const AddAddress = ({
                 />
               </div>
               <Input
-                label="Province / State"
+                label="İlçe / Eyalet"
                 name="province"
                 autoComplete="address-level1"
                 data-testid="state-input"
@@ -128,15 +133,16 @@ const AddAddress = ({
                 data-testid="country-select"
               />
               <Input
-                label="Phone"
+                label="Telefon"
                 name="phone"
-                autoComplete="phone"
+                autoComplete="tel"
                 data-testid="phone-input"
               />
             </div>
             {formState.error && (
               <div
-                className="text-rose-500 text-small-regular py-2"
+                className="p-3 mt-4 text-sm font-light flex items-center gap-2"
+                style={{ background: "rgba(220,38,38,0.05)", color: "rgb(185,28,28)", border: "1px solid rgba(220,38,38,0.2)" }}
                 data-testid="address-error"
               >
                 {formState.error}
@@ -144,17 +150,24 @@ const AddAddress = ({
             )}
           </Modal.Body>
           <Modal.Footer>
-            <div className="flex gap-3 mt-6">
-              <Button
+            <div className="flex gap-3 mt-8 items-center justify-end">
+              <button
                 type="reset"
-                variant="secondary"
                 onClick={close}
-                className="h-10"
+                className="label-caps px-6 py-3 transition-colors"
+                style={{ background: "transparent", color: "#1e2b20", border: "1px solid rgba(30,43,32,0.2)" }}
                 data-testid="cancel-button"
               >
-                Cancel
-              </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+                Vazgeç
+              </button>
+              <button
+                type="submit"
+                className="label-caps px-8 py-3 transition-opacity hover:opacity-80"
+                style={{ background: "#1e2b20", color: "#f5f0e8" }}
+                data-testid="save-button"
+              >
+                Kaydet
+              </button>
             </div>
           </Modal.Footer>
         </form>

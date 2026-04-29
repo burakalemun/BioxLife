@@ -25,11 +25,15 @@ export default async function Addresses(props: {
 
   return (
     <div className="w-full" data-testid="addresses-page-wrapper">
-      <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Shipping Addresses</h1>
-        <p className="text-base-regular">
-          View and update your shipping addresses, you can add as many as you
-          like. Saving your addresses will make them available during checkout.
+      <div className="mb-10 flex flex-col gap-y-3">
+        <h1
+          className="text-3xl font-medium"
+          style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}
+        >
+          Kayıtlı Adresler
+        </h1>
+        <p className="text-sm font-light" style={{ color: "#6b7b6c" }}>
+          Kayıtlı teslimat ve fatura adreslerinizi görüntüleyin, güncelleyin veya yeni bir adres ekleyin. Siparişlerinizin daha hızlı tamamlanmasını sağlar.
         </p>
       </div>
       <AddressBook customer={customer} region={region} />

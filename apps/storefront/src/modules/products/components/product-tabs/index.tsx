@@ -12,14 +12,24 @@ type ProductTabsProps = {
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
+  const metadata = (product.metadata || {}) as Record<string, string>
+  
   const tabs = [
     {
-      label: "Product Information",
+      label: "Ürün Bilgileri",
       component: <ProductInfoTab product={product} />,
     },
     {
-      label: "Shipping & Returns",
-      component: <ShippingInfoTab />,
+      label: "Uygulama Yöntemi",
+      component: <MetadataTab content={metadata.application || "Uygulama yöntemi belirtilmemiş."} />,
+    },
+    {
+      label: "Sertifikalar",
+      component: <MetadataTab content={metadata.certificate || "Sertifika bilgisi bulunmamaktadır."} />,
+    },
+    {
+      label: "Teslimat ve İade",
+      component: <ShippingInfoTab metadata={metadata} />,
     },
   ]
 
@@ -41,34 +51,40 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
   )
 }
 
+const MetadataTab = ({ content }: { content: string }) => (
+  <div className="text-small-regular py-8 text-sage-600 leading-relaxed">
+    {content}
+  </div>
+)
+
 const ProductInfoTab = ({ product }: ProductTabsProps) => {
   return (
     <div className="text-small-regular py-8">
       <div className="grid grid-cols-2 gap-x-8">
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Material</span>
+            <span className="font-semibold text-sage-900">Materyal</span>
             <p>{product.material ? product.material : "-"}</p>
           </div>
           <div>
-            <span className="font-semibold">Country of origin</span>
+            <span className="font-semibold text-sage-900">Menşei</span>
             <p>{product.origin_country ? product.origin_country : "-"}</p>
           </div>
           <div>
-            <span className="font-semibold">Type</span>
+            <span className="font-semibold text-sage-900">Tür</span>
             <p>{product.type ? product.type.value : "-"}</p>
           </div>
         </div>
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Weight</span>
+            <span className="font-semibold text-sage-900">Ağırlık</span>
             <p>{product.weight ? `${product.weight} g` : "-"}</p>
           </div>
           <div>
-            <span className="font-semibold">Dimensions</span>
+            <span className="font-semibold text-sage-900">Boyutlar</span>
             <p>
               {product.length && product.width && product.height
-                ? `${product.length}L x ${product.width}W x ${product.height}H`
+                ? `${product.length}U x ${product.width}G x ${product.height}Y`
                 : "-"}
             </p>
           </div>
@@ -78,38 +94,25 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
   )
 }
 
-const ShippingInfoTab = () => {
+const ShippingInfoTab = ({ metadata }: { metadata: Record<string, string> }) => {
   return (
     <div className="text-small-regular py-8">
       <div className="grid grid-cols-1 gap-y-8">
         <div className="flex items-start gap-x-2">
-          <FastDelivery />
+          <FastDelivery className="text-gold-600" />
           <div>
-            <span className="font-semibold">Fast delivery</span>
-            <p className="max-w-sm">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
+            <span className="font-semibold text-sage-900">Teslimat</span>
+            <p className="max-w-sm text-sage-600">
+              {metadata.delivery || "Paketiniz 3-5 iş günü içerisinde belirtilen adrese ulaştırılır."}
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
-          <Refresh />
+          <Back className="text-gold-600" />
           <div>
-            <span className="font-semibold">Simple exchanges</span>
-            <p className="max-w-sm">
-              Is the fit not quite right? No worries - we&apos;ll exchange your
-              product for a new one.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-x-2">
-          <Back />
-          <div>
-            <span className="font-semibold">Easy returns</span>
-            <p className="max-w-sm">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
+            <span className="font-semibold text-sage-900">İade Koşulları</span>
+            <p className="max-w-sm text-sage-600">
+              {metadata.return_policy || "Ürününüzü iade edin, paranızı geri ödeyelim. Sorunsuz iade sürecimizle her zaman yanınızdayız."}
             </p>
           </div>
         </div>
@@ -118,4 +121,4 @@ const ShippingInfoTab = () => {
   )
 }
 
-export default ProductTabs
+export default ProductTabs;

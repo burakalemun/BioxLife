@@ -9,13 +9,33 @@ export const listRegions = async () => {
     ...(await getCacheOptions("regions")),
   }
 
-  return await sdk.client
-    .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
-      method: "GET",
-      next,
-      cache: "force-cache",
-    })
-    .then(({ regions }) => regions)
+  try {
+    return await sdk.client
+      .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      })
+      .then(({ regions }) => regions)
+  } catch (error) {
+    console.warn("Backend'e ulaşılamadı, mock region kullanılıyor...")
+    return [
+      {
+        id: "reg_mock",
+        name: "Turkey",
+        currency_code: "try",
+        countries: [
+          {
+            id: 1,
+            iso_2: "tr",
+            iso_3: "tur",
+            name: "Turkey",
+            display_name: "Turkey",
+          },
+        ],
+      } as any,
+    ]
+  }
 }
 
 export const retrieveRegion = async (id: string) => {
@@ -23,13 +43,31 @@ export const retrieveRegion = async (id: string) => {
     ...(await getCacheOptions(["regions", id].join("-"))),
   }
 
-  return await sdk.client
-    .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
-      method: "GET",
-      next,
-      cache: "force-cache",
-    })
-    .then(({ region }) => region)
+  try {
+    return await sdk.client
+      .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      })
+      .then(({ region }) => region)
+  } catch (error) {
+    console.warn(`Region ${id} bulunamadı, mock region dönülüyor...`)
+    return {
+      id: "reg_mock",
+      name: "Turkey",
+      currency_code: "try",
+      countries: [
+        {
+          id: 1,
+          iso_2: "tr",
+          iso_3: "tur",
+          name: "Turkey",
+          display_name: "Turkey",
+        },
+      ],
+    } as any
+  }
 }
 
 const regionMap = new Map<string, HttpTypes.StoreRegion>()

@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-
 import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
 import { listRegions } from "@lib/data/regions"
@@ -16,51 +15,76 @@ export default async function Nav() {
   ])
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
-            </div>
+    <header className="fixed top-0 inset-x-0 z-50">
+      {/* Promo bar */}
+      <div className="py-2 text-center label-caps text-[9px] tracking-widest" style={{ background: "#1e2b20", color: "#c9a84c" }}>
+        <span className="hidden small:inline">✦ &nbsp; 500₺ ÜZERİ ÜCRETSIZ KARGO &nbsp; ✦ &nbsp; %100 DOĞAL & SERTİFİKALI ORGANİK &nbsp; ✦ &nbsp; 1–3 İŞ GÜNÜNDE TESLİMAT &nbsp; ✦</span>
+        <span className="small:hidden">✦ &nbsp; 500₺ ÜZERİ ÜCRETSIZ KARGO &nbsp; ✦ &nbsp; DOĞAL & ORGANİK</span>
+      </div>
+      {/* Main nav */}
+      <nav
+        className="h-16"
+        style={{ background: "rgba(245,240,232,0.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(30,43,32,0.08)" }}
+      >
+      <div className="content-container h-full flex items-center justify-between">
+        {/* Left */}
+        <div className="flex items-center gap-8">
+          <div className="small:hidden">
+            <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
           </div>
-
-          <div className="flex items-center h-full">
+          <div className="hidden small:flex items-center gap-8">
             <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
-              data-testid="nav-store-link"
+              href="/store"
+              className="label-caps text-[#1e2b20]/70 hover:text-[#1e2b20] transition-colors"
             >
-              Medusa Store
+              Mağaza
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              href="/about"
+              className="label-caps text-[#1e2b20]/70 hover:text-[#1e2b20] transition-colors"
+            >
+              Hikayemiz
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              href="/journal"
+              className="label-caps text-[#1e2b20]/70 hover:text-[#1e2b20] transition-colors"
+            >
+              Journal
             </LocalizedClientLink>
           </div>
+        </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
-                className="hover:text-ui-fg-base"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
-            <Suspense
-              fallback={
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  Cart (0)
-                </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
-          </div>
-        </nav>
-      </header>
-    </div>
+        {/* Center: Logo */}
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <LocalizedClientLink
+            href="/"
+            data-testid="nav-store-link"
+            style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "0.25em" }}
+            className="text-lg font-medium text-[#1e2b20] hover:text-[#c9a84c] transition-colors uppercase"
+          >
+            BioxLife
+          </LocalizedClientLink>
+        </div>
+
+        {/* Right */}
+        <div className="flex items-center gap-6">
+          <LocalizedClientLink
+            href="/account"
+            data-testid="nav-account-link"
+            className="label-caps text-[#1e2b20]/70 hover:text-[#1e2b20] transition-colors hidden small:block"
+          >
+            Hesap
+          </LocalizedClientLink>
+          <Suspense fallback={
+            <LocalizedClientLink href="/cart" data-testid="nav-cart-link" className="label-caps text-[#1e2b20]/70">
+              Sepet (0)
+            </LocalizedClientLink>
+          }>
+            <CartButton />
+          </Suspense>
+        </div>
+      </div>
+      </nav>
+    </header>
   )
 }

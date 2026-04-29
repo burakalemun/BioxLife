@@ -1,10 +1,7 @@
 "use client"
 
 import {
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-  Transition,
+  Popover, PopoverButton, PopoverPanel, Transition,
 } from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
@@ -17,207 +14,169 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
-const CartDropdown = ({
-  cart: cartState,
-}: {
-  cart?: HttpTypes.StoreCart | null
-}) => {
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
-  )
+const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }) => {
+  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(undefined)
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
   const open = () => setCartDropdownOpen(true)
   const close = () => setCartDropdownOpen(false)
 
-  const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
-
+  const totalItems = cartState?.items?.reduce((acc, i) => acc + i.quantity, 0) || 0
   const subtotal = cartState?.subtotal ?? 0
   const itemRef = useRef<number>(totalItems || 0)
 
-  const timedOpen = () => {
-    open()
+  const timedOpen = () => { open(); const t = setTimeout(close, 5000); setActiveTimer(t) }
+  const openAndCancel = () => { if (activeTimer) clearTimeout(activeTimer); open() }
 
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
-  const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
-    open()
-  }
-
-  // Clean up the timer when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
-    }
-  }, [activeTimer])
+  useEffect(() => () => { if (activeTimer) clearTimeout(activeTimer) }, [activeTimer])
 
   const pathname = usePathname()
-
-  // open cart dropdown when modifying the cart items, but only if we're not on the cart page
   useEffect(() => {
-    if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
-      timedOpen()
-    }
+    if (itemRef.current !== totalItems && !pathname.includes("/cart")) timedOpen()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalItems, itemRef.current])
 
   return (
-    <div
-      className="h-full z-50"
-      onMouseEnter={openAndCancel}
-      onMouseLeave={close}
-    >
+    <div className="h-full z-50" onMouseEnter={openAndCancel} onMouseLeave={close}>
       <Popover className="relative h-full">
-        <PopoverButton className="h-full">
+        <PopoverButton className="h-full flex items-center">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
             href="/cart"
             data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+            className="label-caps flex items-center gap-2 transition-opacity hover:opacity-70"
+            style={{ color: "#1e2b20" }}
+          >
+            Sepet
+            <span
+              className="inline-flex items-center justify-center w-5 h-5"
+              style={{
+                background: totalItems > 0 ? "#1e2b20" : "transparent",
+                border: `1px solid ${totalItems > 0 ? "#1e2b20" : "rgba(30,43,32,0.3)"}`,
+                color: totalItems > 0 ? "#f5f0e8" : "#1e2b20",
+                fontSize: "9px",
+              }}
+            >
+              {totalItems}
+            </span>
+          </LocalizedClientLink>
         </PopoverButton>
+
         <Transition
           show={cartDropdownOpen}
           as={Fragment}
           enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
+          enterFrom="opacity-0 translate-y-2"
           enterTo="opacity-100 translate-y-0"
           leave="transition ease-in duration-150"
           leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
+          leaveTo="opacity-0 translate-y-2"
         >
           <PopoverPanel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
             data-testid="nav-cart-dropdown"
+            className="hidden small:block absolute top-[calc(100%+20px)] right-0 w-[400px]"
+            style={{
+              background: "#f5f0e8",
+              border: "1px solid rgba(30,43,32,0.1)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
+            }}
           >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
+            {/* Header */}
+            <div
+              className="px-8 py-5 flex items-center justify-between"
+              style={{ borderBottom: "1px solid rgba(30,43,32,0.08)" }}
+            >
+              <p className="label-caps" style={{ color: "#1e2b20" }}>
+                Sepetiniz · {totalItems} ürün
+              </p>
+              <button onClick={close} style={{ color: "#6b7b6c" }} className="hover:opacity-70 transition-opacity">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              </button>
             </div>
-            {cartState && cartState.items?.length ? (
+
+            {cartState?.items?.length ? (
               <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
+                {/* Items list */}
+                <div className="max-h-[380px] overflow-y-auto no-scrollbar">
                   {cartState.items
-                    .sort((a, b) => {
-                      return (a.created_at ?? "") > (b.created_at ?? "")
-                        ? -1
-                        : 1
-                    })
+                    .sort((a, b) => ((a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1))
                     .map((item) => (
                       <div
-                        className="grid grid-cols-[122px_1fr] gap-x-4"
                         key={item.id}
+                        className="flex gap-5 px-8 py-6"
+                        style={{ borderBottom: "1px solid rgba(30,43,32,0.06)" }}
                         data-testid="cart-item"
                       >
-                        <LocalizedClientLink
-                          href={`/products/${item.product_handle}`}
-                          className="w-24"
-                        >
-                          <Thumbnail
-                            thumbnail={item.thumbnail}
-                            images={item.variant?.product?.images}
-                            size="square"
-                          />
-                        </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
-                          <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
-                                <h3 className="text-base-regular overflow-hidden text-ellipsis">
-                                  <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
-                                    data-testid="product-link"
-                                  >
-                                    {item.title}
-                                  </LocalizedClientLink>
-                                </h3>
-                                <LineItemOptions
-                                  variant={item.variant}
-                                  data-testid="cart-item-variant"
-                                  data-value={item.variant}
-                                />
-                                <span
-                                  data-testid="cart-item-quantity"
-                                  data-value={item.quantity}
-                                >
-                                  Quantity: {item.quantity}
-                                </span>
-                              </div>
-                              <div className="flex justify-end">
-                                <LineItemPrice
-                                  item={item}
-                                  style="tight"
-                                  currencyCode={cartState.currency_code}
-                                />
-                              </div>
-                            </div>
+                        <LocalizedClientLink href={`/products/${item.product_handle}`} className="shrink-0">
+                          <div className="w-20 h-24 overflow-hidden" style={{ background: "#ede8de" }}>
+                            <Thumbnail thumbnail={item.thumbnail} images={item.variant?.product?.images} size="full" />
                           </div>
-                          <DeleteButton
-                            id={item.id}
-                            className="mt-1"
-                            data-testid="cart-item-remove-button"
-                          >
-                            Remove
+                        </LocalizedClientLink>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between gap-2 mb-1">
+                            <h4 className="text-sm font-medium truncate" style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }} data-testid="product-link">
+                              {item.title}
+                            </h4>
+                            <LineItemPrice item={item} style="tight" currencyCode={cartState.currency_code} />
+                          </div>
+                          <LineItemOptions variant={item.variant} data-testid="cart-item-variant" data-value={item.variant} />
+                          <p className="label-caps mt-1" style={{ color: "#6b7b6c", fontSize: "9px" }} data-testid="cart-item-quantity" data-value={item.quantity}>
+                            Adet: {item.quantity}
+                          </p>
+                          <DeleteButton id={item.id} className="mt-2 label-caps hover:opacity-60 transition-opacity" data-testid="cart-item-remove-button" style={{ color: "#6b7b6c", fontSize: "9px" }}>
+                            Kaldır
                           </DeleteButton>
                         </div>
                       </div>
                     ))}
                 </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-                  <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
-                      Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
-                    </span>
+
+                {/* Footer */}
+                <div className="px-8 py-6" style={{ background: "#1e2b20" }}>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="label-caps" style={{ color: "rgba(245,240,232,0.6)" }}>Ara Toplam</span>
                     <span
-                      className="text-large-semi"
+                      className="text-xl font-medium"
+                      style={{ fontFamily: "'Playfair Display', serif", color: "#f5f0e8" }}
                       data-testid="cart-subtotal"
                       data-value={subtotal}
                     >
-                      {convertToLocale({
-                        amount: subtotal,
-                        currency_code: cartState.currency_code,
-                      })}
+                      {convertToLocale({ amount: subtotal, currency_code: cartState.currency_code })}
                     </span>
                   </div>
-                  <LocalizedClientLink href="/cart" passHref>
-                    <Button
-                      className="w-full"
-                      size="large"
-                      data-testid="go-to-cart-button"
-                    >
-                      Go to cart
-                    </Button>
-                  </LocalizedClientLink>
-                </div>
-              </>
-            ) : (
-              <div>
-                <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                  <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                    <span>0</span>
-                  </div>
-                  <span>Your shopping bag is empty.</span>
-                  <div>
-                    <LocalizedClientLink href="/store">
-                      <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
-                      </>
+                  <div className="grid grid-cols-2 gap-3">
+                    <LocalizedClientLink href="/cart" onClick={close}>
+                      <button
+                        className="w-full py-3 label-caps transition-all"
+                        style={{ border: "1px solid rgba(245,240,232,0.2)", color: "rgba(245,240,232,0.7)" }}
+                        data-testid="go-to-cart-button"
+                      >
+                        Sepeti Gör
+                      </button>
+                    </LocalizedClientLink>
+                    <LocalizedClientLink href="/checkout" onClick={close}>
+                      <button
+                        className="w-full py-3 label-caps transition-all"
+                        style={{ background: "#c9a84c", color: "#1e2b20" }}
+                      >
+                        Ödeme Yap
+                      </button>
                     </LocalizedClientLink>
                   </div>
                 </div>
+              </>
+            ) : (
+              <div className="px-8 py-16 text-center">
+                <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center" style={{ background: "#ede8de" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7b6c" strokeWidth="1.2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                </div>
+                <p className="text-sm font-light mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "#1e2b20" }}>
+                  Sepetiniz boş
+                </p>
+                <LocalizedClientLink href="/store" onClick={close}>
+                  <button className="btn-outline" style={{ fontSize: "10px", padding: "10px 24px" }}>
+                    Ürünleri Keşfet
+                  </button>
+                </LocalizedClientLink>
               </div>
             )}
           </PopoverPanel>
