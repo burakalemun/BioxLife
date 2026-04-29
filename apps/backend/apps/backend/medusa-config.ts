@@ -29,6 +29,7 @@ module.exports = defineConfig({
   modules: [
     {
       resolve: "@medusajs/event-bus-redis",
+      key: "event_bus",
       options: {
         redisUrl: process.env.REDIS_URL,
       },
