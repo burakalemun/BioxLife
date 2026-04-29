@@ -14,9 +14,7 @@ async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
 
   if (!BACKEND_URL) {
-    throw new Error(
-      "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a NEXT_PUBLIC_MEDUSA_BACKEND_URL environment variable."
-    )
+    console.warn("Middleware: NEXT_PUBLIC_MEDUSA_BACKEND_URL is missing. Using mock regions.")
   }
 
   if (
